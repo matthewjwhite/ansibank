@@ -22,10 +22,23 @@ can be a huge pain.
 
 # Usage
 
-Simply clone this repository and run `go install .`.
+## Build
 
-Next, run your playbook as you would with `ansible-playbook`, but with `ansible-playbook` replaced with
-`ansibank`.
+Simply clone this repository and run `go install .`. Ansibank can then be accessed via `ansibank`.
+
+## Running Playbook
+
+Run your playbook as you would `ansible-playbook`, but replaced with `ansibank`.
+
+For example:
+```
+ansible-playbook -e SOME_VAR=test my-playbook.yml
+```
+
+Would become:
+```
+ansibank -e SOME_VAR=test my-playbook.yml
+```
 
 The only caveat is that the code currently assumues your playbook path is the _last_ argument to `ansibank`.
 Note that the playbook path, like with `ansible-playbook`, **does not** need to be an absolute path.
