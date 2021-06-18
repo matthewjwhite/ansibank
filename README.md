@@ -43,10 +43,13 @@ ansibank -e SOME_VAR=test my-playbook.yml
 The only caveat is that the code currently assumues your playbook path is the _last_ argument to `ansibank`.
 Note that the playbook path, like with `ansible-playbook`, **does not** need to be an absolute path.
 
+## Listing Previous Runs
+
+Run `ansibank list` from the directory containing your database.
+
 # TODO
 
-* Running queries against your SQLite DB directly isn't too helpful. The plan is to add commands to list
-  your playbook runs and pick a particular one to view.
+* Use TUI for listing, and print selected playbook execution to print output.
 * Currently, playbook runs are identified by the playbook path (realpathed). If you move your playbook to
   a different location, it would be helpful to be able to reflect that in the database. The thought is to
   provide a `move` command here.
