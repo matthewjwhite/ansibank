@@ -4,6 +4,10 @@ Ever find yourself wishing you could review the output from a playbook you ran a
 
 ... Well, now you can!
 
+![Demo](demo.gif)
+_Rendering by [asciinema](https://github.com/asciinema/asciinema) and
+[asciicast2gif](https://github.com/asciinema/asciicast2gif)_
+
 ## Description
 
 `ansibank` is a drop-in replacement for `ansible-playbook` that preserves your playbook output.
