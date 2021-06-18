@@ -37,3 +37,5 @@ Note that the playbook path, like with `ansible-playbook`, **does not** need to 
 * Currently, playbook runs are identified by the playbook path (realpathed). If you move your playbook to
   a different location, it would be helpful to be able to reflect that in the database. The thought is to
   provide a `move` command here.
+* The Ansibank DB is created in the directory from where you run `ansibank`. Making this configurable would
+  be nice.
