@@ -54,7 +54,7 @@ func (m listModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		case "enter":
 			// Print output.
-			fmt.Println(m.choices[m.cursor].Output)
+			fmt.Print(m.choices[m.cursor].Output)
 
 			return m, tea.Quit
 		}
