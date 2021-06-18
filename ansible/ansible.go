@@ -69,7 +69,7 @@ func (pi PlaybookInvocation) Tee() (*PlaybookResult, error) {
 		outputBuilder.Write(tmp)
 	}
 
-	// If it simply failed to a failed Ansible run, don't fail this process!
+	// If it simply failed due to a failed Ansible run, don't fail this process!
 	var e *exec.ExitError
 	if err = cmd.Wait(); err != nil && !errors.As(err, &e) {
 		return nil, err
