@@ -10,7 +10,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-const runTable = "run"
+const resultTable = "results"
 
 // DB is a wrapper for the standard library DB object (via embedding), with some added helpers.
 // This effectively emulates inheritance. Note that since this simply contains a pointer, we
@@ -30,7 +30,7 @@ func New(path string) (DB, error) {
 }
 
 func (d DB) GetResults() ([]*playbook.Result, error) {
-	row, err := d.Query("SELECT start_time, playbook, args, output FROM " + runTable)
+	row, err := d.Query("SELECT start_time, playbook, args, output FROM " + resultTable)
 	if err != nil {
 		return nil, err
 	}
@@ -65,7 +65,7 @@ func (d DB) GetResults() ([]*playbook.Result, error) {
 // Init creates the required table for storing runs, if it doesn't exist already.
 func (d DB) Init() error {
 	statement, err := d.Prepare(
-		"CREATE TABLE IF NOT EXISTS " + runTable + " " +
+		"CREATE TABLE IF NOT EXISTS " + resultTable + " " +
 			"(id INTEGER PRIMARY KEY, " +
 			"start_time DATETIME DEFAULT CURRENT_TIMESTAMP, " +
 			"playbook TEXT, " +
@@ -85,7 +85,7 @@ func (d DB) Init() error {
 
 // Insert adds the results of a playbook's execution to the database.
 func (d DB) Insert(r *playbook.Result) error {
-	statement, err := d.Prepare("INSERT INTO " + runTable +
+	statement, err := d.Prepare("INSERT INTO " + resultTable +
 		"(start_time, playbook, args, output) VALUES (?, ?, ?, ?)")
 	if err != nil {
 		return err
