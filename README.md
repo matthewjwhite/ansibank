@@ -26,3 +26,11 @@ Simply clone this repository and run `go install .`.
 
 From here, run your playbook as you would with with `ansible-playbook`, but with `ansible-playbook`
 replaced with `ansibank`.
+
+## TODO
+
+* Running queries against your SQLite DB directly isn't too helpful. The plan is to add commands to list
+  your playbook runs and pick a particular one to view. Hopefully with a nifty TUI.
+* Currently, playbook runs are identified by the playbook path (realpathed). If you move your playbook to
+  a different location, it would be helpful to be able to reflect that in the database. The thought is to
+  provide a `move` command here.
