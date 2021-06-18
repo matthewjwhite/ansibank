@@ -44,7 +44,10 @@ func (d DB) GetResults() ([]*playbook.Result, error) {
 		var args string
 		var output string
 
-		row.Scan(&startTime, &playbookPath, &args, &output)
+		err = row.Scan(&startTime, &playbookPath, &args, &output)
+		if err != nil {
+			return nil, err
+		}
 
 		results = append(results, &playbook.Result{
 			Invocation: &playbook.Invocation{
