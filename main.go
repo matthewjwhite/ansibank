@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	tea "github.com/charmbracelet/bubbletea"
 	"github.com/matthewjwhite/ansibank/db"
 	"github.com/matthewjwhite/ansibank/playbook"
 	"github.com/yookoala/realpath"
@@ -13,16 +14,15 @@ const (
 	dbError = 1 << iota
 	playbookError
 	pathError
+	tuiError
 )
 
-func list(d db.DB) error {
-	results, err := d.GetResults()
-	if err != nil {
-		return err
-	}
+func listTUI(results []*playbook.Result) error {
+	p := tea.NewProgram(listModel{choices: results})
 
-	for _, result := range results {
-		fmt.Println(result.Invocation.Path + ":" + result.StartTime.String())
+	// Start will block until Tea completes, ex. via tea.Quit.
+	if err := p.Start(); err != nil {
+		return err
 	}
 
 	return nil
@@ -43,9 +43,15 @@ func main() {
 	}
 
 	if len(os.Args) == 2 && os.Args[1] == "list" {
-		if err = list(db); err != nil {
+		results, err := db.GetResults()
+		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(dbError)
+		}
+
+		if err = listTUI(results); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(tuiError)
 		}
 
 		return
