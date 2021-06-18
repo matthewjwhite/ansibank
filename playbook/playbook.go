@@ -1,4 +1,4 @@
-package ansible
+package playbook
 
 import (
 	"errors"
@@ -9,18 +9,18 @@ import (
 	"time"
 )
 
-const playbookBinary = "ansible-playbook"
+const binary = "ansible-playbook"
 
-// PlaybookInvocation is a specific invocation of a playbook.
-type PlaybookInvocation struct {
+// Invocation is a specific invocation of a playbook.
+type Invocation struct {
 	Path      string
 	Arguments []string
 }
 
-// PlaybookResult is the result of executing a playbook. Pointer not too necessary
+// Result is the result of executing a playbook. Pointer not too necessary
 // for invocation, just allows us to point at the original invocation.
-type PlaybookResult struct {
-	Invocation *PlaybookInvocation
+type Result struct {
+	Invocation *Invocation
 	StartTime  time.Time
 	Output     string
 }
@@ -28,9 +28,9 @@ type PlaybookResult struct {
 // Tee executes a playbook while simultaneously writing to both stdout and a buffer.
 // A stringified version of the buffer along with other information is returned.
 // Based on https://stackoverflow.com/a/62630988.
-func (pi PlaybookInvocation) Tee() (*PlaybookResult, error) {
-	allArgs := append(pi.Arguments, pi.Path)
-	cmd := exec.Command(playbookBinary, allArgs...)
+func (i Invocation) Tee() (*Result, error) {
+	allArgs := append(i.Arguments, i.Path)
+	cmd := exec.Command(binary, allArgs...)
 	cmd.Env = append(os.Environ(), "ANSIBLE_FORCE_COLOR=true") // Preserve colors.
 
 	// Obtain pipe. Note that StdoutPipe is a ReadCloser, so we
@@ -76,8 +76,8 @@ func (pi PlaybookInvocation) Tee() (*PlaybookResult, error) {
 	}
 
 	// Output could be huge, return a pointer!
-	return &PlaybookResult{
-		Invocation: &pi,
+	return &Result{
+		Invocation: &i,
 		StartTime:  startTime,
 		Output:     outputBuilder.String(),
 	}, nil

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/matthewjwhite/ansibank/ansible"
 	"github.com/matthewjwhite/ansibank/db"
+	"github.com/matthewjwhite/ansibank/playbook"
 	"github.com/yookoala/realpath"
 )
 
@@ -52,25 +52,25 @@ func main() {
 	}
 
 	// For now, assume playbook path is the **last** argument.
-	playbookPath := os.Args[len(os.Args)-1]
-	playbookRealPath, err := realpath.Realpath(playbookPath)
+	path := os.Args[len(os.Args)-1]
+	realPath, err := realpath.Realpath(path)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(pathError)
 	}
 
-	playbookInvocation := ansible.PlaybookInvocation{
-		Path:      playbookRealPath,
+	invocation := playbook.Invocation{
+		Path:      realPath,
 		Arguments: os.Args[1 : len(os.Args)-1],
 	}
 
-	playbookRun, err := playbookInvocation.Tee()
+	result, err := invocation.Tee()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(playbookError)
 	}
 
-	if err = db.Insert(playbookRun); err != nil {
+	if err = db.Insert(result); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(dbError)
 	}

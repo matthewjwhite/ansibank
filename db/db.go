@@ -6,7 +6,7 @@ import (
 
 	"time"
 
-	"github.com/matthewjwhite/ansibank/ansible"
+	"github.com/matthewjwhite/ansibank/playbook"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -29,14 +29,14 @@ func New(path string) (DB, error) {
 	return DB{db}, nil
 }
 
-func (d DB) GetResults() ([]*ansible.PlaybookResult, error) {
+func (d DB) GetResults() ([]*playbook.Result, error) {
 	row, err := d.Query("SELECT start_time, playbook, args, output FROM " + runTable)
 	if err != nil {
 		return nil, err
 	}
 	defer row.Close()
 
-	results := make([]*ansible.PlaybookResult, 0)
+	results := make([]*playbook.Result, 0)
 
 	for row.Next() {
 		var startTime time.Time
@@ -46,8 +46,8 @@ func (d DB) GetResults() ([]*ansible.PlaybookResult, error) {
 
 		row.Scan(&startTime, &playbookPath, &args, &output)
 
-		results = append(results, &ansible.PlaybookResult{
-			Invocation: &ansible.PlaybookInvocation{
+		results = append(results, &playbook.Result{
+			Invocation: &playbook.Invocation{
 				Path:      playbookPath,
 				Arguments: strings.Split(args, " "),
 			},
@@ -81,7 +81,7 @@ func (d DB) Init() error {
 }
 
 // Insert adds the results of a playbook's execution to the database.
-func (d DB) Insert(r *ansible.PlaybookResult) error {
+func (d DB) Insert(r *playbook.Result) error {
 	statement, err := d.Prepare("INSERT INTO " + runTable +
 		"(start_time, playbook, args, output) VALUES (?, ?, ?, ?)")
 	if err != nil {
