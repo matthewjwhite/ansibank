@@ -4,29 +4,21 @@ Ever find yourself wishing you could review the output from a playbook you ran a
 
 ... Well, now you can!
 
-## What?
+## Description
 
-`ansibank` is a drop-in replacement for `ansible-playbook`.
+`ansibank` is a drop-in replacement for `ansible-playbook` that preserves your playbook output.
 
 `ansibank` streams your `ansible-playbook` output as you would expect, while writing it to a local SQLite
-database upon completion.
+database upon completion. AWX/Tower are nifty because they store playbook output for later review -
+this project seeks to CLI-ify output preservation in a way that is closer to typical `ansible-playbook` usage.
 
-## Why?
+## Usage
 
-Having some experience with Tower, I particularly :heart:ed the ability to preserve playbook logs. When
-developing playbooks, I generally run them multiple times to debug, sometimes across different windows,
-sometimes closing those windows between runs. It's often helpful to review those logs, and losing them
-can be a huge pain.
-
-`ansibank` seeks to totally eliminate the possibility of losing those logs.
-
-# Usage
-
-## Build
+### Build
 
 Simply clone this repository and run `go install .`. Ansibank can then be accessed via `ansibank`.
 
-## Running Playbook
+### Running Playbook
 
 Run your playbook as you would `ansible-playbook`, but replaced with `ansibank`.
 
@@ -40,14 +32,14 @@ Would become:
 ansibank -e SOME_VAR=test my-playbook.yml
 ```
 
-The only caveat is that the code currently assumues your playbook path is the _last_ argument to `ansibank`.
-Note that the playbook path, like with `ansible-playbook`, **does not** need to be an absolute path.
+The only caveat is that the code currently assumes your playbook path is the _last_ argument to `ansibank`.
+Note that the playbook path, as with `ansible-playbook`, **does not** need to be an absolute path.
 
-## Listing Previous Runs
+### Listing Previous Runs
 
 Run `ansibank list` from the directory containing your database.
 
-# TODO
+## TODO
 
 * Use TUI for listing, and print selected playbook execution to print output.
 * Currently, playbook runs are identified by the playbook path (realpathed). If you move your playbook to
