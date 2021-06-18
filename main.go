@@ -30,7 +30,6 @@ func main() {
 	}
 
 	// For now, assume playbook path is the **last** argument.
-	// @TODO: Logic to automatically parse.
 	playbookPath := os.Args[len(os.Args)-1]
 	playbookRealPath, err := realpath.Realpath(playbookPath)
 	if err != nil {
@@ -53,6 +52,4 @@ func main() {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(dbError)
 	}
-
-	// @TODO: Implement GET, w/ something like bubbletea + lipgloss, and MOVE.
 }
