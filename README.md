@@ -20,7 +20,7 @@ can be a huge pain.
 
 `ansibank` seeks to totally eliminate the possibility of losing those logs.
 
-## Usage
+# Usage
 
 Simply clone this repository and run `go install .`.
 
@@ -30,7 +30,7 @@ replaced with `ansibank`.
 The only caveat is that the code currently assumues your playbook path is the _last_ argument to `ansibank`.
 Note that the playbook path, like with `ansible-playbook`, **does not** need to be an absolute path.
 
-## TODO
+# TODO
 
 * Running queries against your SQLite DB directly isn't too helpful. The plan is to add commands to list
   your playbook runs and pick a particular one to view. Hopefully with a nifty TUI.
