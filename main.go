@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	dbError = iota
+	dbError = 1 << iota
 	playbookError
 	pathError
 )
