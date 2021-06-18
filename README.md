@@ -24,8 +24,8 @@ can be a huge pain.
 
 Simply clone this repository and run `go install .`.
 
-From here, run your playbook as you would with with `ansible-playbook`, but with `ansible-playbook`
-replaced with `ansibank`.
+Next, run your playbook as you would with `ansible-playbook`, but with `ansible-playbook` replaced with
+`ansibank`.
 
 The only caveat is that the code currently assumues your playbook path is the _last_ argument to `ansibank`.
 Note that the playbook path, like with `ansible-playbook`, **does not** need to be an absolute path.
@@ -33,9 +33,9 @@ Note that the playbook path, like with `ansible-playbook`, **does not** need to 
 # TODO
 
 * Running queries against your SQLite DB directly isn't too helpful. The plan is to add commands to list
-  your playbook runs and pick a particular one to view. Hopefully with a nifty TUI.
+  your playbook runs and pick a particular one to view.
 * Currently, playbook runs are identified by the playbook path (realpathed). If you move your playbook to
   a different location, it would be helpful to be able to reflect that in the database. The thought is to
   provide a `move` command here.
-* The Ansibank DB is created in the directory from where you run `ansibank`. Making this configurable would
-  be nice.
+* The Ansibank DB is created in the directory from where you run `ansibank`, with the name `ansibank-db`.
+  Making this configurable would be nice.
