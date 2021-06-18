@@ -1,3 +1,4 @@
+// Package db provides helper functionality for interacting with the database.
 package db
 
 import (
@@ -29,6 +30,7 @@ func New(path string) (DB, error) {
 	return DB{db}, nil
 }
 
+// GetResults returns all previously executed playbook runs.
 func (d DB) GetResults() ([]*playbook.Result, error) {
 	row, err := d.Query("SELECT start_time, playbook, args, output FROM " + resultTable)
 	if err != nil {

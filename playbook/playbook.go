@@ -1,3 +1,4 @@
+// Package playbook provides helper functionality for running Ansible playbooks.
 package playbook
 
 import (
