@@ -17,8 +17,17 @@ const (
 	tuiError
 )
 
-func listTUI(results []*playbook.Result) error {
-	p := tea.NewProgram(listModel{choices: results})
+func listTUI(db db.DB) error {
+	// Get path times for the list.
+	pathTimes, err := db.GetPathTimes()
+	if err != nil {
+		return err
+	}
+
+	// Initialize with set of PathTimes. Another option is to Init
+	// with GetPathTimes and pass an error message to Update, easier
+	// to do this for now and about as clean.
+	p := tea.NewProgram(listModel{choices: pathTimes, db: db})
 
 	// Start will block until Tea completes, ex. via tea.Quit.
 	if err := p.Start(); err != nil {
@@ -43,13 +52,7 @@ func main() {
 	}
 
 	if len(os.Args) == 2 && os.Args[1] == "list" {
-		results, err := db.GetResults()
-		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
-			os.Exit(dbError)
-		}
-
-		if err = listTUI(results); err != nil {
+		if err = listTUI(db); err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(tuiError)
 		}

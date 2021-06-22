@@ -27,6 +27,12 @@ type DB struct {
 	*sql.DB
 }
 
+// PathTime is a minimal struct that associates a playbook path with a start time.
+type PathTime struct {
+	Path      string
+	StartTime time.Time
+}
+
 // New returns DB struct, given a valid path to the local database file.
 func New(path string) (DB, error) {
 	db, err := sql.Open("sqlite3", path)
@@ -37,40 +43,61 @@ func New(path string) (DB, error) {
 	return DB{db}, nil
 }
 
-// GetResults returns all previously executed playbook runs.
-func (d DB) GetResults() ([]*playbook.Result, error) {
+// GetPathTimes returns the paths and start times of all previously executed runs.
+func (d DB) GetPathTimes() ([]PathTime, error) {
 	row, err := d.Query(
-		fmt.Sprintf("SELECT %s, %s, %s, %s FROM %s",
-			startTimeCol, pathCol, argsCol, outputCol, resultTable))
+		fmt.Sprintf("SELECT %s, %s FROM %s",
+			startTimeCol, pathCol, resultTable))
 	if err != nil {
 		return nil, err
 	}
 	defer row.Close()
 
-	results := make([]*playbook.Result, 0)
+	pathTimes := make([]PathTime, 0)
 
 	for row.Next() {
 		var startTime time.Time
-		var playbookPath string
-		var args string
-		var output string
+		var path string
 
-		err = row.Scan(&startTime, &playbookPath, &args, &output)
+		err = row.Scan(&startTime, &path)
 		if err != nil {
 			return nil, err
 		}
 
-		results = append(results, &playbook.Result{
-			Invocation: &playbook.Invocation{
-				Path:      playbookPath,
-				Arguments: strings.Split(args, " "),
-			},
-			StartTime: startTime,
-			Output:    output,
-		})
+		pathTimes = append(pathTimes, PathTime{path, startTime})
 	}
 
-	return results, nil
+	return pathTimes, nil
+}
+
+// GetOutput returns the playbook output for a particular path and time.
+// Will error if more than one that output is returned.
+func (d DB) GetOutput(p PathTime) (string, error) {
+	row, err := d.Query(
+		fmt.Sprintf("SELECT %s FROM %s WHERE %s=? AND %s=?",
+			outputCol, resultTable, pathCol, startTimeCol),
+		p.Path, p.StartTime)
+	if err != nil {
+		return "", err
+	}
+	// It's possible for there to be more than 2.
+	defer row.Close()
+
+	if !row.Next() {
+		return "", fmt.Errorf("no results for path %s, time %s", p.Path, p.StartTime)
+	}
+
+	var output string
+	if err = row.Scan(&output); err != nil {
+		return "", err
+	}
+
+	// Fail if more than one result, https://stackoverflow.com/a/37629440.
+	if row.Next() {
+		return "", fmt.Errorf("more than one result for path %s, time %s", p.Path, p.StartTime)
+	}
+
+	return output, nil
 }
 
 // Init creates the required table for storing runs, if it doesn't exist already.

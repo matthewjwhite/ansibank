@@ -2,11 +2,12 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
 	gloss "github.com/charmbracelet/lipgloss"
-	"github.com/matthewjwhite/ansibank/playbook"
+	"github.com/matthewjwhite/ansibank/db"
 )
 
 // Define style "constants" - technically not constants, const not allowed for these.
@@ -23,8 +24,9 @@ var (
 // Based on https://github.com/charmbracelet/bubbletea/blob/master/tutorials/basics.
 // This tracks the state of the TUI, and maintains pointers to key data.
 type listModel struct {
-	choices []*playbook.Result
+	choices []db.PathTime
 	cursor  int
+	db      db.DB
 }
 
 // Init is the initialization method expected for the bubbletea model. Since we have
@@ -54,7 +56,16 @@ func (m listModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		case "enter":
 			// Print output.
-			fmt.Print(m.choices[m.cursor].Output)
+			output, err := m.db.GetOutput(m.choices[m.cursor])
+			if err != nil {
+				// Will not cause Start to fail, will quit normally. TUI still
+				// did its job, despite failure internally. Not clear how to
+				// propagate failure anyway through tea.
+				fmt.Fprintf(os.Stderr, "\nFailed to retrieve output: %s\n", err)
+			} else {
+				// Output will be set if error is nil.
+				fmt.Print(output)
+			}
 
 			return m, tea.Quit
 		}
@@ -73,7 +84,7 @@ func (m listModel) View() string {
 			cursor = cursorPoint
 		}
 
-		choiceRender := pathStyle.Render(choice.Invocation.Path) + " " +
+		choiceRender := pathStyle.Render(choice.Path) + " " +
 			choice.StartTime.Local().Format(time.Stamp)
 		s += fmt.Sprintf("%s %s\n", cursor, choiceRender)
 	}
