@@ -3,6 +3,7 @@ package db
 
 import (
 	"database/sql"
+	"fmt"
 	"strings"
 
 	"time"
@@ -11,7 +12,13 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-const resultTable = "results"
+const (
+	resultTable  = "results"
+	startTimeCol = "start_time"
+	pathCol      = "playbook"
+	argsCol      = "args"
+	outputCol    = "output"
+)
 
 // DB is a wrapper for the standard library DB object (via embedding), with some added helpers.
 // This effectively emulates inheritance. Note that since this simply contains a pointer, we
@@ -32,7 +39,9 @@ func New(path string) (DB, error) {
 
 // GetResults returns all previously executed playbook runs.
 func (d DB) GetResults() ([]*playbook.Result, error) {
-	row, err := d.Query("SELECT start_time, playbook, args, output FROM " + resultTable)
+	row, err := d.Query(
+		fmt.Sprintf("SELECT %s, %s, %s, %s FROM %s",
+			startTimeCol, pathCol, argsCol, outputCol, resultTable))
 	if err != nil {
 		return nil, err
 	}
@@ -67,12 +76,11 @@ func (d DB) GetResults() ([]*playbook.Result, error) {
 // Init creates the required table for storing runs, if it doesn't exist already.
 func (d DB) Init() error {
 	statement, err := d.Prepare(
-		"CREATE TABLE IF NOT EXISTS " + resultTable + " " +
-			"(id INTEGER PRIMARY KEY, " +
-			"start_time DATETIME DEFAULT CURRENT_TIMESTAMP, " +
-			"playbook TEXT, " +
-			"args TEXT, " +
-			"output TEXT)")
+		fmt.Sprintf("CREATE TABLE IF NOT EXISTS %s "+
+			"(id INTEGER PRIMARY KEY, "+
+			"%s DATETIME DEFAULT CURRENT_TIMESTAMP, "+
+			"%s TEXT, %s TEXT, %s TEXT)",
+			resultTable, startTimeCol, pathCol, argsCol, outputCol))
 	if err != nil {
 		return err
 	}
@@ -87,8 +95,9 @@ func (d DB) Init() error {
 
 // Insert adds the results of a playbook's execution to the database.
 func (d DB) Insert(r *playbook.Result) error {
-	statement, err := d.Prepare("INSERT INTO " + resultTable +
-		"(start_time, playbook, args, output) VALUES (?, ?, ?, ?)")
+	statement, err := d.Prepare(
+		fmt.Sprintf("INSERT INTO %s (%s, %s, %s, %s) VALUES (?, ?, ?, ?)",
+			resultTable, startTimeCol, pathCol, argsCol, outputCol))
 	if err != nil {
 		return err
 	}
