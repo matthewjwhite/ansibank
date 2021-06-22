@@ -80,7 +80,7 @@ func (d DB) GetOutput(p PathTime) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	// It's possible for there to be more than 2.
+	// It's possible for there to be more than 2, Close required if Next not called for all.
 	defer row.Close()
 
 	if !row.Next() {

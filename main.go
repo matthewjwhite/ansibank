@@ -26,7 +26,8 @@ func listTUI(db db.DB) error {
 
 	// Initialize with set of PathTimes. Another option is to Init
 	// with GetPathTimes and pass an error message to Update, easier
-	// to do this for now and about as clean.
+	// to do this for now and about as clean. Example:
+	// https://github.com/charmbracelet/bubbletea/tree/master/tutorials/commands/.
 	p := tea.NewProgram(listModel{choices: pathTimes, db: db})
 
 	// Start will block until Tea completes, ex. via tea.Quit.

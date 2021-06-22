@@ -63,7 +63,7 @@ func (m listModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				// propagate failure anyway through tea.
 				fmt.Fprintf(os.Stderr, "\nFailed to retrieve output: %s\n", err)
 			} else {
-				// Output will be set if error is nil.
+				// Output will be set if error is not nil.
 				fmt.Print(output)
 			}
 
